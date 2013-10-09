@@ -9,5 +9,11 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+DEB_DIR=debian/bam-window
+
 %:
 	dh  $@
+
+override_dh_auto_install:
+	mkdir -p $(DEB_DIR)/usr/bin/
+	install -m 755 bam-window $(DEB_DIR)/usr/bin/
