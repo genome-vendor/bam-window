@@ -2,7 +2,7 @@ Source: bam-window
 Section: misc
 Priority: extra
 Maintainer: Mark Burnett <mburnett@genome.wustl.edu>
-Build-Depends: gcc, debhelper (>= 7)
+Build-Depends: gcc (>= 5.4), debhelper (>= 7)
 Standards-Version: 3.8.3
 Homepage: <insert the upstream URL, if relevant>
 
