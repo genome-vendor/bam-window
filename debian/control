@@ -1,0 +1,17 @@
+Source: bam-window
+Section: misc
+Priority: extra
+Maintainer: Mark Burnett <mburnett@genome.wustl.edu>
+Build-Depends: gcc, debhelper (>= 7)
+Standards-Version: 3.8.3
+Homepage: <insert the upstream URL, if relevant>
+
+Package: bam-window
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Reports the number of reads mapping within adjacent windows
+ Bam-window reports the number of reads mapping within adjacent windows on the
+ genome It reports the number of reads overlapping the window or optionally,
+ just reports the number whose leftmost mapping coordinate is within the
+ window. Use -d to report only a random sampling of the reads within the
+ window. This is useful for approximating results at lower coverage depths.
