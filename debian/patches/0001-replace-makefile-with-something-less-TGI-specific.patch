@@ -1,0 +1,32 @@
+From: Mark Burnett <mburnett@genome.wustl.edu>
+Date: Wed, 9 Oct 2013 11:21:44 -0500
+Subject: [PATCH] replace makefile with something less TGI specific
+
+---
+ Makefile | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index e90b40b..0604a49 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,2 +1,16 @@
+-all:
+-	gcc -g -Wall -O2 -I/gsc/pkg/bio/samtools/samtools-0.1.17/ bamwindow.c -o bam-window -lm -lz -L/gsc/pkg/bio/samtools/samtools-0.1.17/ -lbam
++SAMTOOLS_VERSION=0.1.17
++
++all: bamwindow
++
++clean:
++	rm -f bam-window
++	rm -rf vendor/samtools-$(SAMTOOLS_VERSION)
++
++bamwindow: samtools
++	gcc -g -Wall -O2 -Ivendor/samtools-$(SAMTOOLS_VERSION) -Lvendor/samtools-$(SAMTOOLS_VERSION) bamwindow.c -o bam-window -lbam -lz
++
++samtools: extract_samtools
++	cd vendor/samtools-$(SAMTOOLS_VERSION); make all
++
++extract_samtools:
++	cd vendor; tar -jxf samtools-$(SAMTOOLS_VERSION).tar.bz2
+-- 
