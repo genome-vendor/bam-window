@@ -2,12 +2,12 @@ Source: bam-window
 Section: misc
 Priority: extra
 Maintainer: Mark Burnett <mburnett@genome.wustl.edu>
-Build-Depends: gcc (>= 5.4), debhelper (>= 7)
+Build-Depends: gcc (>= 5.4), debhelper (>= 7), zlib1g-dev (>= 1.2.3)
 Standards-Version: 3.8.3
 
 Package: bam-window
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: zlib1g (>= 1.2.3)
 Description: Reports the number of reads mapping within adjacent windows
  Bam-window reports the number of reads mapping within adjacent windows on the
  genome It reports the number of reads overlapping the window or optionally,
