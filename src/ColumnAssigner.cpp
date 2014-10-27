@@ -105,7 +105,7 @@ PerLibAndLengthColumnAssigner::PerLibAndLengthColumnAssigner(
         , std::vector<uint32_t> const& rl
         )
 {
-    // First, let's sort and deduplicate the lib lengths and read names
+    // First, let's sort and deduplicate the lib names and read lengths
     boost::container::flat_set<uint32_t> read_lens(rl.begin(), rl.end());
     boost::container::flat_set<std::string> lib_names;
     for (auto i = rg2lib.begin(); i != rg2lib.end(); ++i)
@@ -117,8 +117,11 @@ PerLibAndLengthColumnAssigner::PerLibAndLengthColumnAssigner(
     std::size_t n_cols{rl.size() * lib_names.size()};
     column_names.reserve(n_cols);
     for (auto i = lib_names.begin(); i != lib_names.end(); ++i) {
+        auto const& lib = *i;
         for (auto j = read_lens.begin(); j != read_lens.end(); ++j) {
-            column_names.push_back(*i + "." + boost::lexical_cast<std::string>(*j));
+            using boost::lexical_cast;
+            auto len = *j;
+            column_names.push_back(lib + "." + lexical_cast<std::string>(len));
         }
     }
 
