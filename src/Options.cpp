@@ -90,6 +90,11 @@ Options::Options(int argc, char** argv)
         ("output-file,o"
             , po::value<std::string>(&output_file)->default_value("-")
             , "Output file (- for stdout)")
+
+        ("sequence,c"
+            , po::value<std::vector<std::string>>(&sequence_names)
+            , "Sequence/chromosome name to operate on (may be specified "
+              "multiple times). By default, all sequences are processed")
         ;
 
     po::options_description rep_opts("Reporting Options");

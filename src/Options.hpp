@@ -4,6 +4,7 @@
 
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 class CmdlineHelpException : public std::runtime_error {
 public:
@@ -39,6 +40,8 @@ struct Options {
     std::string seed_string;
     long seed;
     float downsample;
+    std::vector<std::string> sequence_names;
+
 
     Options(int argc, char** argv);
 

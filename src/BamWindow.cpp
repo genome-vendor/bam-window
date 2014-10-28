@@ -17,6 +17,35 @@
 
 using boost::format;
 
+namespace {
+    std::vector<int32_t> configure_sequences(
+          std::vector<std::string> seq_names
+        , BamHeader const& header
+        )
+    {
+        std::vector<int32_t> rv;
+        if (seq_names.empty()) {
+            rv.reserve(header.num_seqs());
+            for (int32_t i = 0; i < header.num_seqs(); ++i) {
+                rv.push_back(i);
+            }
+        }
+        else {
+            rv.reserve(seq_names.size());
+            for (auto i = seq_names.begin(); i != seq_names.end(); ++i) {
+                int32_t idx = header.seq_idx(*i);
+                if (idx < 0) {
+                    throw std::runtime_error(str(format(
+                        "Sequence %1% not found in bam file."
+                        ) % *i));
+                }
+                rv.push_back(idx);
+            }
+        }
+        return rv;
+    }
+}
+
 BamWindow::BamWindow(Options const& opts)
     : opts_(opts)
 {
@@ -68,8 +97,9 @@ void BamWindow::exec() {
     bool downsample = configure_downsampling();
 
     BamEntry e;
-    int32_t num_seqs = header.num_seqs();
-    for (int32_t i = 0; i < num_seqs; ++i) {
+    auto seqs = configure_sequences(opts_.sequence_names, header);
+    for (auto iter = seqs.begin(); iter != seqs.end(); ++iter) {
+        auto i = *iter;
         reader.set_sequence_idx(i);
         char const* seq_name = header.seq_name(i);
         assert(seq_name != 0);

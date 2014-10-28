@@ -7,9 +7,6 @@
 #include <memory>
 #include <vector>
 
-class BamEntry;
-class BamReader;
-
 class BamWindow {
 public:
     BamWindow(Options const& opts);

@@ -49,6 +49,9 @@ BamHeader::BamHeader(bam_header_t* header)
     : header_(header)
     , rg_to_lib_(rg2lib_map(header))
 {
+    for (int32_t i = 0; i < header_->n_targets; ++i) {
+        seq_name_to_idx_[seq_name(i)] = i;
+    }
 }
 
 int32_t BamHeader::num_seqs() const {
@@ -67,4 +70,11 @@ uint32_t BamHeader::seq_length(int32_t seq_idx) const {
 
 auto BamHeader::rg_to_lib_map() const -> RgToLibMap const& {
     return rg_to_lib_;
+}
+
+int32_t BamHeader::seq_idx(std::string const& seq_name) const {
+    auto found = seq_name_to_idx_.find(seq_name);
+    if (found == seq_name_to_idx_.end())
+        return -1;
+    return found->second;
 }
