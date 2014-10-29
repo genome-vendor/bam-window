@@ -26,9 +26,6 @@ public:
     std::string const& path() const { return path_; }
 
 private:
-    bool raw_next(BamEntry& entry);
-
-private:
     std::string path_;
     samfile_t* in_;
     bam_index_t* index_;
