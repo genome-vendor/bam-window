@@ -74,11 +74,8 @@ public:
 
     template<typename T>
     void operator()(T const& value) {
-        uint32_t fstpos = first_pos(value);
-        uint32_t lstpos = last_pos(value);
-
         uint32_t fst_row, lst_row;
-        std::tie(fst_row, lst_row) = row_assigner_.row_range(fstpos, lstpos);
+        std::tie(fst_row, lst_row) = row_assigner_.row_range(value);
         char const* rg{0};
         if (needs_read_group_)
             rg = read_group(value);
@@ -88,15 +85,16 @@ public:
 
         if (col < 0) {
             std::cerr << "Warning: read " << name(value)
-                << " has invalid read group or length ("
-                << rg << ", " << len << "), skipping\n";
+                << " has invalid read group or length (rg="
+                << (rg ? rg : "null")
+                << ", len=" << len << "), skipping\n";
             return;
         }
 
         set_current_row(fst_row);
 
-        for (auto i = fst_row; i <= lst_row; ++i) {
-            increment_cell(i, col);
+        for (; fst_row <= lst_row; ++fst_row) {
+            increment_cell(fst_row, col);
         }
     }
 
@@ -129,17 +127,18 @@ public:
         }
     }
 
+    uint32_t current_pos() const {
+        // convert to 1-based output coordinates
+        return row_assigner_.win_size * current_row_ + 1;
+    }
+
     void print_empty_row() const {
-        uint32_t pos = row_assigner_.win_size * current_row_ + 1;
-        printer_(seq_name_, pos);
+        printer_(seq_name_, current_pos());
     }
 
     void print_row(Counts const& c) const {
         assert(c.size() == col_assigner_.num_columns());
-
-        // convert to 1-based output coordinates
-        uint32_t pos = row_assigner_.win_size * current_row_ + 1;
-        printer_(seq_name_, pos, c);
+        printer_(seq_name_, current_pos(), c);
     }
 
     Counts new_row() const {
