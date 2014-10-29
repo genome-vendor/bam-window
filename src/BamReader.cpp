@@ -52,7 +52,20 @@ void BamReader::set_sequence_idx(int32_t tid) {
 }
 
 bool BamReader::raw_next(BamEntry& entry) {
-    return bam_iter_read(in_->x.bam, iter_, entry) > 0;
+    int rv = bam_iter_read(in_->x.bam, iter_, entry);
+    // From the samtools source code:
+    // rv > 0 -> success
+    // rv == -1: normal eof
+    // rv < -1: error
+    if (rv > 0)
+        return true;
+    else if (rv == -1)
+        return false;
+
+    throw std::runtime_error(str(format(
+        "Error while reading bam file %1% (bam_read1 returned %2%; "
+        "probably a truncated file)."
+        ) % path() % rv));
 }
 
 bool BamReader::next(BamEntry& entry) {

@@ -23,6 +23,8 @@ public:
 
     BamHeader const& header() const;
 
+    std::string const& path() const { return path_; }
+
 private:
     bool raw_next(BamEntry& entry);
 
