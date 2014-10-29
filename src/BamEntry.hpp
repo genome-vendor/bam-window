@@ -35,10 +35,30 @@ private:
     bam1_t* data;
 };
 
-uint32_t first_pos(BamEntry const& e);
-uint32_t last_pos(BamEntry const& e);
-uint32_t length(BamEntry const& e);
 char const* read_group(BamEntry const& e);
 char const* name(BamEntry const& e);
-int sam_flag(BamEntry const& e);
-int mapping_quality(BamEntry const& e);
+
+inline
+uint32_t first_pos(BamEntry const& e) {
+    return e->core.pos;
+}
+
+inline
+uint32_t last_pos(BamEntry const& e) {
+    return bam_calend(&e->core, bam1_cigar(e));
+}
+
+inline
+uint32_t length(BamEntry const& e) {
+    return e->core.l_qseq;
+}
+
+inline
+int mapping_quality(BamEntry const& e) {
+    return e->core.qual;
+}
+
+inline
+int sam_flag(BamEntry const& e) {
+    return e->core.flag;
+}
