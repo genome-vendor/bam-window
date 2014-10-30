@@ -53,13 +53,14 @@ void BamReader::set_sequence_idx(int32_t tid) {
 
 bool BamReader::next(BamEntry& entry) {
     int rv;
-    while ((rv = bam_iter_read(in_->x.bam, iter_, entry)) > 0) {
+    while ((rv = bam_iter_read(in_->x.bam, iter_, entry)) >= 0) {
         if (!filter_ || filter_->want_entry(entry))
             break;
     }
 
     // From the samtools source code:
-    // rv > 0 -> success
+    // (for bam_iter_read)
+    // rv >= 0 -> success
     // rv == -1: normal eof
     // rv < -1: error
     if (rv < -1) {
@@ -68,7 +69,7 @@ bool BamReader::next(BamEntry& entry) {
             "probably a truncated file)."
             ) % path() % rv));
     }
-    return rv > 0;
+    return rv >= 0;
 }
 
 BamHeader const& BamReader::header() const {
