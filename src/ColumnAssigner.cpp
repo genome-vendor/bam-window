@@ -96,6 +96,9 @@ std::size_t PerLibColumnAssigner::num_columns() const {
 }
 
 int PerLibColumnAssigner::assign_column(char const* rg, uint32_t read_len) const {
+    if (!rg)
+        return -1;
+
     auto iter = index_.find(rg);
     if (iter == index_.end())
         return -1;
@@ -151,6 +154,9 @@ PerLibAndLengthColumnAssigner::PerLibAndLengthColumnAssigner(
 }
 
 int PerLibAndLengthColumnAssigner::assign_column(const char* rg, uint32_t read_len) const {
+    if (!rg)
+        return -1;
+
     KeyType key{rg, read_len};
     auto found = index_.find(key);
     if (found == index_.end())

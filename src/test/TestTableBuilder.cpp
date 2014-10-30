@@ -39,10 +39,20 @@ namespace {
 
         std::vector<Row> rows;
     };
+
+    struct MockWarningCollector {
+        void warn_invalid_col(char const* rg, uint32_t len) {
+            warnings.emplace_back(rg, len);
+        }
+
+        std::vector<std::pair<char const*, uint32_t>> warnings;
+    };
 }
 
 class TestTableBuilder : public ::testing::Test {
 public:
+    typedef TableBuilder<RowCollector, MockWarningCollector> BuilderType;
+
     void SetUp() {
         uint32_t seq_len{62};
         uint32_t win_size{5};
@@ -64,7 +74,8 @@ public:
 
 TEST_F(TestTableBuilder, build) {
     RowCollector res;
-    auto tb = make_table_builder("chr1", *row_assigner, *col_assigner, res);
+    MockWarningCollector warnings;
+    BuilderType tb("chr1", *row_assigner, *col_assigner, res, warnings);
 
     std::vector<MockEntry> entries{
           MockEntry{0, 4, 36, "rg1"}
@@ -123,4 +134,14 @@ TEST_F(TestTableBuilder, build) {
     EXPECT_TRUE(rows[10].counts.empty()); // [55, 60]
     EXPECT_TRUE(rows[11].counts.empty()); // [55, 60]
     EXPECT_TRUE(rows[12].counts.empty()); // [60, 65]
+
+    // No warnings yet
+    EXPECT_TRUE(warnings.warnings.empty());
+
+    MockEntry bad{10, 20, 256, "foo"};
+    tb(bad);
+
+    ASSERT_EQ(1u, warnings.warnings.size());
+    EXPECT_EQ(bad.read_group, warnings.warnings[0].first);
+    EXPECT_EQ(bad.length, warnings.warnings[0].second);
 }

@@ -19,7 +19,10 @@ set(LIB_SOURCES
     Options.hpp
     RowAssigner.cpp
     RowAssigner.hpp
+    StreamJoin.hpp
     TableBuilder.hpp
+    WarningCollector.cpp
+    WarningCollector.hpp
 )
 
 add_library(bwin ${LIB_SOURCES})

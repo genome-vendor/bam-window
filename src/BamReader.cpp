@@ -13,6 +13,8 @@ BamReader::BamReader(std::string path)
     , in_(samopen(path_.c_str(), "rb", 0))
     , index_(bam_index_load(path_.c_str()))
     , iter_(0)
+    , total_(0)
+    , filtered_(0)
 {
     if (!in_ || !in_->header)
         throw std::runtime_error(str(format("Failed to open samfile %1%") % path_));
@@ -54,8 +56,10 @@ void BamReader::set_sequence_idx(int32_t tid) {
 bool BamReader::next(BamEntry& entry) {
     int rv;
     while ((rv = bam_iter_read(in_->x.bam, iter_, entry)) >= 0) {
+        ++total_;
         if (!filter_ || filter_->want_entry(entry))
             break;
+        ++filtered_;
     }
 
     // From the samtools source code:

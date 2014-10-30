@@ -7,6 +7,7 @@
 #include "ColumnAssigner.hpp"
 #include "RowAssigner.hpp"
 #include "TableBuilder.hpp"
+#include "WarningCollector.hpp"
 
 #include <boost/format.hpp>
 
@@ -89,6 +90,7 @@ void BamWindow::exec() {
     reader.set_filter(&filter);
 
     auto const& header = reader.header();
+    WarningCollector warnings(opts_, header.rg_to_lib_map());
 
     std::unique_ptr<ColumnAssignerBase> col_assigner = make_column_assigner(opts_, reader);
     col_assigner->print_header(*out_ptr_);
@@ -106,11 +108,24 @@ void BamWindow::exec() {
         uint32_t seq_len = header.seq_length(i);
         RowAssigner row_assigner(seq_len, opts_.window_size);
         row_assigner.set_start_only(opts_.leftmost);
-        TableBuilder<> builder(seq_name, row_assigner, *col_assigner, printer);
+        TableBuilder<> builder(
+              seq_name
+            , row_assigner
+            , *col_assigner
+            , printer
+            , warnings);
 
         while (reader.next(e)) {
             if (!downsample || (drand48() < opts_.downsample))
                 builder(e);
         }
     }
+
+    std::cerr << "Processed " << reader.total_read() << " reads";
+    auto nfilt = reader.total_filtered();
+    if (nfilt) {
+        std::cerr << " (" << nfilt << " filtered).";
+    }
+    std::cerr << "\n";
+    warnings.print(std::cerr);
 }

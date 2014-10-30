@@ -25,6 +25,9 @@ public:
 
     std::string const& path() const { return path_; }
 
+    std::size_t total_read() const { return total_; }
+    std::size_t total_filtered() const {return filtered_; }
+
 private:
     std::string path_;
     samfile_t* in_;
@@ -34,4 +37,7 @@ private:
     bam_iter_t iter_;
 
     BamFilter* filter_;
+
+    std::size_t total_;
+    std::size_t filtered_;
 };

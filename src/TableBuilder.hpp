@@ -1,5 +1,6 @@
 #pragma once
 
+#include "WarningCollector.hpp"
 #include "RowAssigner.hpp"
 #include "ColumnAssigner.hpp"
 
@@ -46,7 +47,7 @@ struct DefaultRowPrinter {
     std::string empty_value_str;
 };
 
-template<typename PrinterType = DefaultRowPrinter>
+template<typename PrinterType = DefaultRowPrinter, typename WarnType = WarningCollector>
 class TableBuilder {
 public:
     typedef std::vector<uint32_t> Counts;
@@ -58,6 +59,7 @@ public:
             , RowAssigner const& row_assigner
             , ColumnAssignerBase const& col_assigner
             , PrinterType& printer
+            , WarnType& warnings
             )
         : current_row_(0)
         , seq_name_(seq_name)
@@ -65,6 +67,7 @@ public:
         , col_assigner_(col_assigner)
         , printer_(printer)
         , needs_read_group_(col_assigner_.needs_read_group())
+        , warnings_(warnings)
     {
     }
 
@@ -84,10 +87,7 @@ public:
         int col = col_assigner_.assign_column(rg, len);
 
         if (col < 0) {
-            std::cerr << "Warning: read " << name(value)
-                << " has invalid read group or length (rg="
-                << (rg ? rg : "null")
-                << ", len=" << len << "), skipping\n";
+            warnings_.warn_invalid_col(rg, len);
             return;
         }
 
@@ -162,19 +162,6 @@ private:
     PrinterType& printer_;
     bool needs_read_group_;
     std::deque<Counts> rows_;
+
+    WarnType& warnings_;
 };
-
-
-template<typename PrinterType>
-TableBuilder<PrinterType>
-make_table_builder(
-          char const* seq_name
-        , RowAssigner const& row_assigner
-        , ColumnAssignerBase const& col_assigner
-        , PrinterType& printer
-        )
-{
-    return TableBuilder<PrinterType>(
-        seq_name, row_assigner, col_assigner, printer
-        );
-}
