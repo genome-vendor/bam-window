@@ -127,18 +127,15 @@ public:
         }
     }
 
-    uint32_t current_pos() const {
-        // convert to 1-based output coordinates
-        return row_assigner_.win_size * current_row_ + 1;
-    }
-
     void print_empty_row() const {
-        printer_(seq_name_, current_pos());
+        auto pos = row_assigner_.start_pos_for_row(current_row_) + 1;
+        printer_(seq_name_, pos);
     }
 
     void print_row(Counts const& c) const {
         assert(c.size() == col_assigner_.num_columns());
-        printer_(seq_name_, current_pos(), c);
+        auto pos = row_assigner_.start_pos_for_row(current_row_) + 1;
+        printer_(seq_name_, pos, c);
     }
 
     Counts new_row() const {

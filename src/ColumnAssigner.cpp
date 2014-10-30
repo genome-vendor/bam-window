@@ -55,33 +55,6 @@ std::unique_ptr<ColumnAssignerBase> make_column_assigner(
 
 
 //////////////////////////////////////////////////////////////////////
-// Per Lib
-PerLibColumnAssigner::PerLibColumnAssigner(RgToLibMap const& rg2lib) {
-    boost::container::flat_set<std::string> lib_names;
-    for (auto i = rg2lib.begin(); i != rg2lib.end(); ++i)
-        lib_names.insert(i->second);
-
-    for (auto i = rg2lib.begin(); i != rg2lib.end(); ++i) {
-        auto where = lib_names.find(i->second);
-        assert(where != lib_names.end());
-        rg_to_col[i->first] = std::distance(lib_names.begin(), where);
-    }
-    column_names.assign(lib_names.begin(), lib_names.end());
-}
-
-std::size_t PerLibColumnAssigner::num_columns() const {
-    return column_names.size();
-}
-
-int PerLibColumnAssigner::assign_column(char const* rg, uint32_t read_len) const {
-    auto iter = rg_to_col.find(rg);
-    if (iter == rg_to_col.end())
-        return -1;
-    return iter->second;
-}
-
-
-//////////////////////////////////////////////////////////////////////
 // Per Length
 PerLengthColumnAssigner::PerLengthColumnAssigner(std::vector<uint32_t> const& lens)
     : read_lens(lens.begin(), lens.end())
@@ -98,17 +71,51 @@ int PerLengthColumnAssigner::assign_column(char const* rg, uint32_t read_len) co
     return found - read_lens.begin();
 }
 
+
+//////////////////////////////////////////////////////////////////////
+// Per Lib
+PerLibColumnAssigner::PerLibColumnAssigner(RgToLibMap rg2lib)
+    : rg2lib_(std::move(rg2lib))
+{
+    boost::container::flat_set<std::string> lib_names;
+    for (auto i = rg2lib_.begin(); i != rg2lib_.end(); ++i)
+        lib_names.insert(i->second);
+
+    for (auto i = rg2lib_.begin(); i != rg2lib_.end(); ++i) {
+        auto where = lib_names.find(i->second);
+        assert(where != lib_names.end());
+        auto offset = std::distance(lib_names.begin(), where);
+        KeyType key{i->first.c_str()};
+        index_[key] = offset;
+    }
+    column_names.assign(lib_names.begin(), lib_names.end());
+}
+
+std::size_t PerLibColumnAssigner::num_columns() const {
+    return column_names.size();
+}
+
+int PerLibColumnAssigner::assign_column(char const* rg, uint32_t read_len) const {
+    auto iter = index_.find(rg);
+    if (iter == index_.end())
+        return -1;
+    return iter->second;
+}
+
+
+
 //////////////////////////////////////////////////////////////////////
 // Per Lib and Length
 PerLibAndLengthColumnAssigner::PerLibAndLengthColumnAssigner(
-          RgToLibMap const& rg2lib
+          RgToLibMap rg2lib
         , std::vector<uint32_t> const& rl
         )
+    : rg2lib_(std::move(rg2lib))
 {
     // First, let's sort and deduplicate the lib names and read lengths
     boost::container::flat_set<uint32_t> read_lens(rl.begin(), rl.end());
     boost::container::flat_set<std::string> lib_names;
-    for (auto i = rg2lib.begin(); i != rg2lib.end(); ++i)
+    for (auto i = rg2lib_.begin(); i != rg2lib_.end(); ++i)
         lib_names.insert(i->second);
 
     // Column names get set as <lib_name>.<read_length>
@@ -127,7 +134,7 @@ PerLibAndLengthColumnAssigner::PerLibAndLengthColumnAssigner(
 
     // Now we can build our index mapping (rg, len) -> column_index
     std::size_t stride = read_lens.size(); // this many columns for each lib
-    for (auto i = rg2lib.begin(); i != rg2lib.end(); ++i) {
+    for (auto i = rg2lib_.begin(); i != rg2lib_.end(); ++i) {
         auto const& rg = i->first;
         auto const& lib = i->second;
         auto lib_iter = lib_names.find(lib);
@@ -137,16 +144,16 @@ PerLibAndLengthColumnAssigner::PerLibAndLengthColumnAssigner(
         for (auto j = read_lens.begin(); j != read_lens.end(); ++j) {
             std::size_t len_idx = std::distance(read_lens.begin(), j);
             std::size_t idx = stride * lib_idx + len_idx;
-            KeyType key{rg, *j};
-            index[key] = idx;
+            KeyType key{rg.c_str(), *j};
+            index_[key] = idx;
         }
     }
 }
 
 int PerLibAndLengthColumnAssigner::assign_column(const char* rg, uint32_t read_len) const {
     KeyType key{rg, read_len};
-    auto found = index.find(key);
-    if (found == index.end())
+    auto found = index_.find(key);
+    if (found == index_.end())
         return -1;
     return found->second;
 }

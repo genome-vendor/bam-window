@@ -1,4 +1,5 @@
 #include "TableBuilder.hpp"
+#include "MockEntry.hpp"
 
 #include "ColumnAssigner.hpp"
 #include "RowAssigner.hpp"
@@ -10,34 +11,6 @@
 #include <sstream>
 
 namespace {
-    struct MockEntry {
-        uint32_t first_pos;
-        uint32_t last_pos;
-        uint32_t length;
-        std::string read_group;
-    };
-
-
-    std::string name(MockEntry const&) {
-        return "";
-    }
-
-    uint32_t first_pos(MockEntry const& e) {
-        return e.first_pos;
-    }
-
-    uint32_t last_pos(MockEntry const& e) {
-        return e.last_pos;
-    }
-
-    uint32_t length(MockEntry const& e) {
-        return e.length;
-    }
-
-    char const* read_group(MockEntry const& e) {
-        return e.read_group.c_str();
-    }
-
     struct RowCollector {
         struct Row {
             std::string seq_name;

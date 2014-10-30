@@ -1,11 +1,13 @@
 #pragma once
 
 #include "BamHeader.hpp"
+#include "MurmurHash2.hpp"
 
 #include <boost/container/flat_set.hpp>
 #include <boost/functional/hash.hpp>
 
 #include <cstdint>
+#include <cstring>
 #include <memory>
 #include <ostream>
 #include <string>
@@ -67,16 +69,6 @@ struct SingleColumnAssigner : ColumnAssignerBase {
     bool needs_read_group() const { return false; }
 };
 
-struct PerLibColumnAssigner : ColumnAssignerBase {
-    explicit PerLibColumnAssigner(RgToLibMap const& rg2lib);
-
-    std::size_t num_columns() const;
-    int assign_column(char const* rg, uint32_t read_len) const;
-    bool needs_read_group() const { return true; }
-
-    std::unordered_map<std::string, uint32_t> rg_to_col;
-};
-
 struct PerLengthColumnAssigner : ColumnAssignerBase {
     explicit PerLengthColumnAssigner(std::vector<uint32_t> const& lens);
 
@@ -86,23 +78,64 @@ struct PerLengthColumnAssigner : ColumnAssignerBase {
     boost::container::flat_set<uint32_t> read_lens;
 };
 
-struct PerLibAndLengthColumnAssigner : ColumnAssignerBase {
-    typedef std::tuple<std::string, uint32_t> KeyType;
-    struct KeyHasher {
-        std::size_t operator()(KeyType const& x) const {
-            std::size_t seed = boost::hash_value(std::get<0>(x));
-            boost::hash_combine(seed, boost::hash_value(std::get<1>(x)));
-            return seed;
+struct PerLibColumnAssigner : ColumnAssignerBase {
+    explicit PerLibColumnAssigner(RgToLibMap rg2lib);
+
+    std::size_t num_columns() const;
+    int assign_column(char const* rg, uint32_t read_len) const;
+    bool needs_read_group() const { return true; }
+
+private:
+    struct KeyType {
+        KeyType(char const* x) : rg(x) {}
+        char const* rg;
+        bool operator==(KeyType const& rhs) const {
+            return strcmp(rg, rhs.rg) == 0;
         }
     };
 
+    struct KeyHasher {
+        std::size_t operator()(KeyType const& x) const {
+            assert(x.rg != 0);
+            char const* p = x.rg;
+            return murmurhash2(p, strlen(p), 40);
+        }
+    };
+
+
+    RgToLibMap rg2lib_;
+    std::unordered_map<KeyType, uint32_t, KeyHasher> index_;
+};
+
+struct PerLibAndLengthColumnAssigner : ColumnAssignerBase {
     PerLibAndLengthColumnAssigner(
-              RgToLibMap const& rg2lib
+              RgToLibMap rg2lib
             , std::vector<uint32_t> const& read_lens
             );
 
     int assign_column(char const* rg, uint32_t read_len) const;
     bool needs_read_group() const { return true; }
 
-    std::unordered_map<KeyType, uint32_t, KeyHasher> index;
+private:
+    struct KeyType {
+        char const* rg;
+        uint32_t len;
+
+        bool operator==(KeyType const& rhs) const {
+            return strcmp(rg, rhs.rg) == 0 && len == rhs.len;
+        }
+    };
+
+    struct KeyHasher {
+        std::size_t operator()(KeyType const& x) const {
+            assert(x.rg != 0);
+            char const* p = x.rg;
+            std::size_t seed = murmurhash2(p, strlen(p), x.len);
+            return seed;
+        }
+    };
+
+
+    RgToLibMap rg2lib_;
+    std::unordered_map<KeyType, uint32_t, KeyHasher> index_;
 };

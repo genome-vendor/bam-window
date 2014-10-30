@@ -13,11 +13,6 @@ struct RowAssigner {
 
     // Get the range of rows this observation applies to
     // first/last_pos are 0-based [first_pos, last_pos)
-    std::tuple<uint32_t, uint32_t> row_range(
-              uint32_t first_pos
-            , uint32_t last_pos
-            ) const;
-
     template<typename T>
     std::tuple<uint32_t, uint32_t> row_range(T const& value) const {
         uint32_t fst_pos = first_pos(value);
@@ -39,12 +34,10 @@ struct RowAssigner {
         return std::make_tuple(first_row, last_row);
     }
 
-    uint32_t start_pos_for_win_index(uint32_t idx) const {
-        return idx * win_size;
-    }
+    uint32_t start_pos_for_row(uint32_t idx) const;
 
-    uint32_t seq_len;
     uint32_t win_size;
-    uint32_t num_wins;
     bool start_only;
+    uint32_t seq_len;
+    uint32_t num_wins;
 };

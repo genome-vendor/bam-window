@@ -5,6 +5,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 set(LIB_SOURCES
     BamEntry.cpp
     BamEntry.hpp
+    BamFilter.hpp
     BamHeader.cpp
     BamHeader.hpp
     BamReader.cpp
@@ -13,6 +14,7 @@ set(LIB_SOURCES
     BamWindow.hpp
     ColumnAssigner.cpp
     ColumnAssigner.hpp
+    MurmurHash2.hpp
     Options.cpp
     Options.hpp
     RowAssigner.cpp
