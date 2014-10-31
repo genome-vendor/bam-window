@@ -63,8 +63,8 @@ public:
         rg2lib["rg3"] = "lib2";
 
         PerLibReadLengths read_lens{
-              {"lib1", {36, 150}}
-            , {"lib2", {150}}
+              {"lib1", {36u, 150u}}
+            , {"lib2", {150u}}
             };
 
         row_assigner.reset(new RowAssigner(seq_len, win_size));

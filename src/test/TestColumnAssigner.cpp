@@ -94,9 +94,9 @@ TEST_F(TestColumnAssigner, assign_by_lib) {
 
 TEST_F(TestColumnAssigner, init_by_lib_and_len) {
     PerLibReadLengths read_lens{
-          {"lib1", {36, 75}}
-        , {"lib2", {75, 100}}
-        , {"lib3", {150, 250}}
+          {"lib1", {36u, 75u}}
+        , {"lib2", {75u, 100u}}
+        , {"lib3", {150u, 250u}}
         };
 
     PerLibAndLengthColumnAssigner ca(rg2lib, read_lens);
@@ -122,9 +122,9 @@ TEST_F(TestColumnAssigner, init_by_lib_and_len) {
 
 TEST_F(TestColumnAssigner, assign_by_lib_and_len) {
     PerLibReadLengths read_lens{
-          {"lib1", {36, 75}}
-        , {"lib2", {75, 100}}
-        , {"lib3", {150, 250}}
+          {"lib1", {36u, 75u}}
+        , {"lib2", {75u, 100u}}
+        , {"lib3", {150u, 250u}}
         };
     std::set<uint32_t> read_set{36, 75, 100, 150, 250};
 

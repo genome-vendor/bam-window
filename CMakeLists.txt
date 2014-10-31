@@ -11,7 +11,7 @@ if(NOT CXX11_FOUND)
         "Failed to find C++11 support with compiler:
          ${CMAKE_CXX_COMPILER} (${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}).")
 endif()
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX11_FLAGS} -Wall -pedantic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX11_FLAGS} -Wall -pedantic -fno-deduce-init-list")
 
 
 ##############################################################################
