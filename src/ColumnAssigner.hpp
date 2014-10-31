@@ -4,7 +4,6 @@
 #include "MurmurHash2.hpp"
 
 #include <boost/container/flat_set.hpp>
-#include <boost/functional/hash.hpp>
 
 #include <cstdint>
 #include <cstring>

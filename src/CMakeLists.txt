@@ -28,8 +28,11 @@ set(LIB_SOURCES
 add_library(bwin ${LIB_SOURCES})
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
-add_executable(bam-window main.cpp)
-target_link_libraries(bam-window bwin ${Samtools_LIBRARIES} ${Boost_LIBRARIES})
-
 include_directories(.)
 add_subdirectory(test)
+
+set(EXECUTABLE_NAME bam-window)
+add_executable(${EXECUTABLE_NAME} main.cpp)
+target_link_libraries(${EXECUTABLE_NAME} bwin ${Samtools_LIBRARIES} ${Boost_LIBRARIES})
+set_target_properties(${EXECUTABLE_NAME} PROPERTIES PACKAGE_OUTPUT_NAME ${EXECUTABLE_NAME}${EXE_VERSION_SUFFIX})
+install(TARGETS ${EXECUTABLE_NAME} DESTINATION bin/)
