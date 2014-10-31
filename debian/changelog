@@ -1,3 +1,28 @@
+bam-window (0.5-1ubuntu1) unstable; urgency=medium
+
+  * rewrite in c++
+  * readability fixes
+  * add -c option (chromosome) for parallel processing
+  * better error checking for bam io
+  * inline a few of the trivial BamEntry functions
+  * refactor BamReader exception handling
+  * defer to RowAssigner for entry stop position
+  * treat 0 returned from bam_iter_read as success
+  * hash char* directly instead of creating std::string for RGs
+  * save warnings and summarize them at the end.
+  * calculate read length columns on a per lib basis
+  * fixes for old gcc versions (4.4)
+  * only give -fno-deduce-init-list to gcc
+  * Squashed 'vendor/samtools/' content from commit 5f2c744
+  * add samtools as a subtree, build it and gtest directly
+  * bundle the required bits of boost
+  * remove some binary stuff that snuck in
+  * remove old build system patches
+  * allow setting suffix on exe
+  * update debian packaging for cmake
+
+ -- Travis Abbott <tabbott@genome.wustl.edu>  Fri, 31 Oct 2014 09:36:22 -0500
+
 bam-window (0.4-1) unstable; urgency=low
 
   * Initial release
