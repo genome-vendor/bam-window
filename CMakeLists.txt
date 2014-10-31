@@ -27,10 +27,6 @@ link_libraries(${CMAKE_THREAD_LIBS_INIT})
 find_package(ZLIB REQUIRED)
 include_directories(${ZLIB_INCLUDE_DIRS})
 
-find_package(Boost 1.51 COMPONENTS program_options REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
-
-
 ##############################################################################
 
 # Build 3rd party libs
@@ -41,6 +37,11 @@ set(Samtools_LIBRARIES bam ${ZLIB_LIBRARIES} m)
 add_subdirectory(vendor/gtest-1.7.0)
 include_directories(vendor/gtest-1.7.0/include)
 set(GTEST_BOTH_LIBRARIES gtest gtest_main)
+
+add_subdirectory(vendor/boostbits)
+include_directories(vendor/boostbits/include)
+set(Boost_LIBRARIES boostbits)
+
 
 enable_testing(true)
 add_subdirectory(src)
