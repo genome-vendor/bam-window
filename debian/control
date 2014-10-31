@@ -1,12 +1,12 @@
 Source: bam-window
 Section: misc
 Priority: extra
-Maintainer: Mark Burnett <mburnett@genome.wustl.edu>
+Maintainer: Travis Abbott <tabbott@genome.wustl.edu>
 Build-Depends: gcc (>= 5.4), debhelper (>= 7), zlib1g-dev (>= 1.2.3), cdbs (>= 0.4.62)
 Standards-Version: 3.8.3
 
 Package: bam-window
-Architecture: all
+Architecture: any
 Depends: ${shlibs:Depends}
 Description: Reports the number of reads mapping within adjacent windows
  Bam-window reports the number of reads mapping within adjacent windows on the
