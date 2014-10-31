@@ -1,4 +1,5 @@
 #include "Options.hpp"
+#include "version.h"
 
 #include <bam.h>
 
@@ -60,9 +61,23 @@ std::string Options::help_message() const {
     return ss.str();
 }
 
+std::string Options::version_message() const {
+    std::stringstream ss;
+    ss << "\nExecutable:\t" << program_name << "\n"
+        << "Version info:\t" << _g_git_version_info << "\n"
+        << "Build type:\t" << _g_build_type << "\n"
+        ;
+
+    return ss.str();
+}
+
 void Options::check_help() const {
     if (var_map.count("list-sam-flags")) {
         throw CmdlineHelpException(sam_flags_str());
+    }
+
+    if (var_map.count("version")) {
+        throw CmdlineHelpException(version_message());
     }
 
     if (var_map.count("help")) {
@@ -78,6 +93,7 @@ Options::Options(int argc, char** argv)
     po::options_description help_opts("Help Options");
     help_opts.add_options()
         ("help,h", "this message")
+        ("version,v", "display version information")
         ("list-sam-flags", "Print SAM flag reference table")
         ;
 

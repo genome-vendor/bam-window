@@ -4,10 +4,8 @@
 extern "C" {
 #endif
 
-const static char* _g_prog_version = "@FULL_VERSION@";
-const static char* _g_commit_hash = "@COMMIT_HASH@";
+const static char* _g_git_version_info = "@GIT_VERSION_INFO@";
 const static char* _g_build_type = "@CMAKE_BUILD_TYPE@";
-const static char* _g_install_prefix = "@CMAKE_INSTALL_PREFIX@";
 
 #ifdef __cplusplus
 }

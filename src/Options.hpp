@@ -50,11 +50,10 @@ struct Options {
 
 private:
     std::string help_message() const;
+    std::string version_message() const;
     void check_help() const;
 
     boost::program_options::options_description opts;
     boost::program_options::positional_options_description pos_opts;
     boost::program_options::variables_map var_map;
-
-
 };

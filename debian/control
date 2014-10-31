@@ -2,7 +2,7 @@ Source: bam-window
 Section: misc
 Priority: extra
 Maintainer: Travis Abbott <tabbott@genome.wustl.edu>
-Build-Depends: gcc (>= 5.4), debhelper (>= 7), zlib1g-dev (>= 1.2.3), cdbs (>= 0.4.62)
+Build-Depends: gcc (>= 5.4), debhelper (>= 7), zlib1g-dev (>= 1.2.3), cdbs (>= 0.4.62), git (>= 1.8.4)
 Standards-Version: 3.8.3
 
 Package: bam-window0.5
