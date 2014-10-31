@@ -8,15 +8,24 @@
 
 #include <cstdint>
 #include <cstring>
+#include <map>
 #include <memory>
 #include <ostream>
+#include <set>
 #include <string>
 #include <tuple>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 struct Options;
 class BamReader;
+
+// We'd like for these to be sorted
+typedef std::map<
+          std::string
+        , std::set<uint32_t>
+        > PerLibReadLengths;
 
 // There are currently 4 modes for mapping (read_group, read_length) -> output
 // column:
@@ -110,7 +119,7 @@ private:
 struct PerLibAndLengthColumnAssigner : ColumnAssignerBase {
     PerLibAndLengthColumnAssigner(
               RgToLibMap rg2lib
-            , std::vector<uint32_t> const& read_lens
+            , PerLibReadLengths const& read_lens
             );
 
     int assign_column(char const* rg, uint32_t read_len) const;

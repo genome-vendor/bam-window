@@ -93,18 +93,19 @@ TEST_F(TestColumnAssigner, assign_by_lib) {
 
 
 TEST_F(TestColumnAssigner, init_by_lib_and_len) {
-    std::vector<uint32_t> read_lens{100, 36, 75};
+    PerLibReadLengths read_lens{
+          {"lib1", {36, 75}}
+        , {"lib2", {75, 100}}
+        , {"lib3", {150, 250}}
+        };
 
     PerLibAndLengthColumnAssigner ca(rg2lib, read_lens);
 
-    // 3 libs, 3 read lengths, should be 9 columns...
-    EXPECT_EQ(9u, ca.num_columns());
-
     // with the following names in this exact order
     std::vector<std::string> expected_cols{
-          "lib1.36", "lib1.75", "lib1.100"
-        , "lib2.36", "lib2.75", "lib2.100"
-        , "lib3.36", "lib3.75", "lib3.100"
+          "lib1.36", "lib1.75"
+        , "lib2.75", "lib2.100"
+        , "lib3.150", "lib3.250"
         };
 
     EXPECT_EQ(expected_cols, ca.column_names);
@@ -112,20 +113,26 @@ TEST_F(TestColumnAssigner, init_by_lib_and_len) {
     std::stringstream ss;
     ca.print_header(ss);
     EXPECT_EQ("Chr\tStart\t"
-        "lib1.36\tlib1.75\tlib1.100\t"
-        "lib2.36\tlib2.75\tlib2.100\t"
-        "lib3.36\tlib3.75\tlib3.100\n"
+        "lib1.36\tlib1.75\t"
+        "lib2.75\tlib2.100\t"
+        "lib3.150\tlib3.250\n"
         , ss.str());
 }
 
 
 TEST_F(TestColumnAssigner, assign_by_lib_and_len) {
-    std::vector<uint32_t> read_lens{75, 36, 100};
+    PerLibReadLengths read_lens{
+          {"lib1", {36, 75}}
+        , {"lib2", {75, 100}}
+        , {"lib3", {150, 250}}
+        };
+    std::set<uint32_t> read_set{36, 75, 100, 150, 250};
+
+
     PerLibAndLengthColumnAssigner ca(rg2lib, read_lens);
 
     EXPECT_EQ(-1, ca.assign_column("unknown_rg", 100));
 
-    std::set<uint32_t> read_set(read_lens.begin(), read_lens.end());
 
     // make sure we always get -1 for invalid read lengths
     for (uint32_t i = 0u; i < 150; ++i) {
@@ -141,18 +148,22 @@ TEST_F(TestColumnAssigner, assign_by_lib_and_len) {
 
     EXPECT_EQ(0, ca.assign_column("rg1", 36));
     EXPECT_EQ(1, ca.assign_column("rg1", 75));
-    EXPECT_EQ(2, ca.assign_column("rg1", 100));
+    EXPECT_EQ(-1, ca.assign_column("rg1", 100));
 
     // rg2 also goes to lib1; same cols as rg1
     EXPECT_EQ(0, ca.assign_column("rg2", 36));
     EXPECT_EQ(1, ca.assign_column("rg2", 75));
-    EXPECT_EQ(2, ca.assign_column("rg2", 100));
+    EXPECT_EQ(-1, ca.assign_column("rg2", 100));
 
-    EXPECT_EQ(3, ca.assign_column("rg3", 36));
-    EXPECT_EQ(4, ca.assign_column("rg3", 75));
-    EXPECT_EQ(5, ca.assign_column("rg3", 100));
+    EXPECT_EQ(-1, ca.assign_column("rg3", 36));
+    EXPECT_EQ(2, ca.assign_column("rg3", 75));
+    EXPECT_EQ(3, ca.assign_column("rg3", 100));
 
-    EXPECT_EQ(6, ca.assign_column("rg4", 36));
-    EXPECT_EQ(7, ca.assign_column("rg4", 75));
-    EXPECT_EQ(8, ca.assign_column("rg4", 100));
+    EXPECT_EQ(-1, ca.assign_column("rg4", 36));
+    EXPECT_EQ(-1, ca.assign_column("rg4", 75));
+    EXPECT_EQ(-1, ca.assign_column("rg4", 100));
+
+    EXPECT_EQ(4, ca.assign_column("rg4", 150));
+    EXPECT_EQ(5, ca.assign_column("rg4", 250));
+
 }
