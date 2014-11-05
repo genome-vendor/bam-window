@@ -1,4 +1,4 @@
-bam-window0.5 (0.5.0-3~lucid) lucid; urgency=medium
+bam-window0.5 (0.5.1-1~lucid) lucid; urgency=medium
 
   * rewrite in c++
   * readability fixes
