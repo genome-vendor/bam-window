@@ -26,8 +26,6 @@ BamReader::BamReader(std::string path)
         throw std::runtime_error(str(format("Failed to load bam index for %1%") % path_));
 
     header_.reset(new BamHeader(in_->header));
-
-    set_sequence_idx(0);
 }
 
 BamReader::~BamReader() {
@@ -45,17 +43,33 @@ void BamReader::set_filter(BamFilter* filter) {
     filter_ = filter;
 }
 
-void BamReader::set_sequence_idx(int32_t tid) {
-    tid_ = tid;
+void BamReader::clear_region() {
     if (iter_)
         bam_iter_destroy(iter_);
+    iter_ = 0;
+}
 
+void BamReader::set_sequence_idx(int32_t tid) {
+    tid_ = tid;
+    clear_region();
     iter_ = bam_iter_query(index_, tid_, 0, header().seq_length(tid));
+}
+
+void BamReader::clear_counts() {
+    total_ = 0;
+    filtered_ = 0;
+}
+
+int BamReader::raw_next(BamEntry& entry) {
+    if (iter_)
+        return bam_iter_read(in_->x.bam, iter_, entry);
+    else
+        return bam_read1(in_->x.bam, entry);
 }
 
 bool BamReader::next(BamEntry& entry) {
     int rv;
-    while ((rv = bam_iter_read(in_->x.bam, iter_, entry)) >= 0) {
+    while ((rv = raw_next(entry))) {
         ++total_;
         if (!filter_ || filter_->want_entry(entry))
             break;

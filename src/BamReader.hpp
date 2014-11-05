@@ -18,6 +18,8 @@ public:
 
     void set_filter(BamFilter* filter);
     void set_sequence_idx(int32_t tid);
+    void clear_region();
+    void clear_counts();
 
     bool next(BamEntry& entry);
 
@@ -27,6 +29,9 @@ public:
 
     std::size_t total_read() const { return total_; }
     std::size_t total_filtered() const {return filtered_; }
+
+private:
+    int raw_next(BamEntry& entry);
 
 private:
     std::string path_;

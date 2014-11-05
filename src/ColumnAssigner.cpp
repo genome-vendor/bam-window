@@ -21,6 +21,7 @@ namespace {
         BamEntry e;
         PerLibReadLengths lens;
 
+        reader.clear_region();
         for (std::size_t i = 0; i < max_entries && reader.next(e); ++i) {
             char const* rg = read_group(e);
             if (!rg)

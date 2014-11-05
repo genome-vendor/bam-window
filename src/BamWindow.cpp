@@ -100,6 +100,7 @@ void BamWindow::exec() {
 
     BamEntry e;
     auto seqs = configure_sequences(opts_.sequence_names, header);
+    reader.clear_counts();
     for (auto iter = seqs.begin(); iter != seqs.end(); ++iter) {
         auto i = *iter;
         reader.set_sequence_idx(i);
