@@ -1,3 +1,10 @@
+bam-window0.5 (0.5.2-1~lucid) lucid-genome-development; urgency=low
+
+  * fix return type check for reading bam
+  * bump package version
+
+ -- Travis Abbott <tabbott@genome.wustl.edu>  Wed, 05 Nov 2014 13:31:32 -0600
+
 bam-window0.5 (0.5.1-2~lucid) lucid; urgency=medium
 
   * rewrite in c++
