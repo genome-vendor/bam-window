@@ -69,7 +69,7 @@ int BamReader::raw_next(BamEntry& entry) {
 
 bool BamReader::next(BamEntry& entry) {
     int rv;
-    while ((rv = raw_next(entry))) {
+    while ((rv = raw_next(entry)) > 0) {
         ++total_;
         if (!filter_ || filter_->want_entry(entry))
             break;
