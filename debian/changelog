@@ -1,3 +1,9 @@
+bam-window0.5 (0.5.4-1~lucid1) lucid-genome-development; urgency=low
+
+  * repackage as 0.5.4 for lucid
+
+ -- Travis Abbott <tabbott@linus129.gsc.wustl.edu>  Thu, 05 Feb 2015 16:04:55 -0600
+
 bam-window0.5 (0.5.3-1~lucid) lucid-genome-development; urgency=low
 
   * update default excluded flags
