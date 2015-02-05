@@ -1,3 +1,10 @@
+bam-window0.5 (0.5.3-1~lucid) lucid-genome-development; urgency=low
+
+  * update default excluded flags
+  * exclude QCFAIL reads by default too
+
+ -- Travis Abbott <tabbott@linus129.gsc.wustl.edu>  Thu, 05 Feb 2015 10:52:48 -0600
+
 bam-window0.5 (0.5.2-1~lucid) lucid-genome-development; urgency=low
 
   * fix return type check for reading bam
