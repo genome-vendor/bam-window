@@ -163,7 +163,7 @@ Options::Options(int argc, char** argv)
 
         ("forbidden-flags,F"
             , po::value<int>(&forbidden_flags)->default_value(
-                BAM_FSECONDARY | BAM_FSUPPLEMENTAL
+                BAM_FSECONDARY | BAM_FSUPPLEMENTAL | BAM_FDUP | BAM_FUNMAP
                 )
             , "SAM flags that each read is forbidden to have")
         ;
