@@ -4,6 +4,7 @@ Count BAM reads in windows by library.
 ## Build Requirements
 - gcc 4.4+ (or equivalent clang version)
 - cmake 2.8+
+- gnu make
 
 ## Build instructions
 
